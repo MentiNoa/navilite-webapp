@@ -1,11 +1,10 @@
-# Villasor-territorio-master WIP
+# NaviLite - WIP
 
-Mappa interattiva con MapLibre
+Piccola webapp basata sulla repo navilite che mette sulla home del proprio telefono un piccolo navigatore leggero ma efficace
 
-Geolocalizzazione
-
-Rotazione automatica in base all’orientamento del dispositivo
-
-Routing con OSRM (Open Source Routing Machine)
-
-Pulsanti per aggiornare posizione, avviare e cancellare la navigazione
+- Geolocalizzazione
+- Rotazione automatica in base all’orientamento del dispositivo
+- Routing con OSRM (Open Source Routing Machine)
+- salvataggio delle zone visitate tramite cache (autoeliminazione FIFO)
+- Pulsanti per aggiornare posizione, avviare e cancellare la navigazione
+- pulsante per cancellare la cache
