@@ -7,4 +7,3 @@ Piccola webapp basata sulla repo navilite che mette sulla home del proprio telef
 - Routing con OSRM (Open Source Routing Machine)
 - salvataggio delle zone visitate tramite cache (autoeliminazione FIFO)
 - Pulsanti per aggiornare posizione, avviare e cancellare la navigazione
-- pulsante per cancellare la cache
