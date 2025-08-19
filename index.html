@@ -133,6 +133,26 @@
     </div>
     <div id="etaBox">Calcolo percorso...</div>
   </div>
+  <button id="installBtn" style="display:none; margin-top:8px;">📲 Installa App</button>
+  <script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'block';
+    });
+
+    document.getElementById('installBtn').addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          console.log(choiceResult.outcome);
+          deferredPrompt = null;
+        });
+      }
+    });
+  </script>
 
   <script>
     // --- App state ---
@@ -662,7 +682,6 @@
 
   </script>
   <script src="/navilite-webapp/sw-register.js"></script>
-
 </body>
 
 </html>
