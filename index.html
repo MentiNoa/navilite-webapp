@@ -5,9 +5,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Navigazione GPS</title>
+
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/osmtogeojson@3.0.0-beta.5/osmtogeojson.js"></script>
+
   <link rel="manifest" href="/navilite-webapp/manifest.json">
   <meta name="theme-color" content="#0f172a">
 
@@ -41,6 +43,7 @@
       display: flex;
       gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     input[type="text"] {
@@ -55,10 +58,11 @@
       padding: 10px 12px;
       border: none;
       border-radius: 10px;
-      background: #0b66ff;
+      background: #4CAF50;
       color: #fff;
       font-weight: 600;
       cursor: pointer;
+      z-index: 10;
     }
 
     button.secondary {
@@ -71,8 +75,15 @@
     }
 
     button.active {
-      outline: 2px solid #0b66ff;
+      outline: 2px solid #084ec8;
       background: #0847b7;
+      color: #fff;
+    }
+
+    #installBtn {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
     }
 
     #resultsList {
@@ -113,6 +124,10 @@
       .controls {
         width: calc(100vw - 20px);
       }
+
+      #installBtn {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -125,18 +140,22 @@
       <input id="searchInput" type="text" placeholder="Cerca in Sardegna (via, luogo)..." autocomplete="off" />
       <button id="searchBtn" class="secondary">Cerca</button>
     </div>
+
     <div id="resultsList"></div>
+
     <div class="row" style="margin-top:8px; gap:8px;">
       <button id="goToSearchBtn">Avvia navigazione</button>
       <button id="followBtn" class="secondary">Segui posizione: Off</button>
       <button id="clearRouteBtn" class="warn">Annulla navigazione</button>
-      <button id="installBtn" style="display:none;">📲 Installa App</button>
     </div>
+
+    <button id="installBtn">📲 Installa App</button>
+
     <div id="etaBox">Calcolo percorso...</div>
   </div>
 
   <script>
-  // script del bottone installa app
+    // Script del bottone installa app
     let deferredPrompt;
 
     window.addEventListener('beforeinstallprompt', (e) => {
