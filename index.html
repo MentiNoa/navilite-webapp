@@ -130,11 +130,13 @@
       <button id="goToSearchBtn">Avvia navigazione</button>
       <button id="followBtn" class="secondary">Segui posizione: Off</button>
       <button id="clearRouteBtn" class="warn">Annulla navigazione</button>
+      <button id="installBtn" style="display:none;">📲 Installa App</button>
     </div>
     <div id="etaBox">Calcolo percorso...</div>
   </div>
-  <button id="installBtn" style="display:none; margin-top:8px;">📲 Installa App</button>
+
   <script>
+  // script del bottone installa app
     let deferredPrompt;
 
     window.addEventListener('beforeinstallprompt', (e) => {
