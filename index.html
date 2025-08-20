@@ -129,6 +129,18 @@
         font-size: 16px;
       }
     }
+
+    #firmaVersione {
+      position: fixed;
+      left: 12px;
+      bottom: 8px;
+      font-size: 12px;
+      color: #666;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 6px;
+      z-index: 999;
+    }
   </style>
 </head>
 
@@ -144,9 +156,9 @@
     <div id="resultsList"></div>
 
     <div class="row" style="margin-top:8px; gap:8px;">
-      <button id="goToSearchBtn">Avvia navigazione</button>
+      <button id="goToSearchBtn">Vai a destinazione</button>
       <button id="followBtn" class="secondary">Segui posizione: Off</button>
-      <button id="clearRouteBtn" class="warn">Annulla navigazione</button>
+      <button id="clearRouteBtn" class="warn">Annulla</button>
     </div>
 
     <button id="installBtn">📲 Installa App</button>
@@ -154,7 +166,13 @@
     <div id="etaBox">Calcolo percorso...</div>
   </div>
 
+  <div id="firmaVersione">© 2025 - v<span id="versionLabel"></span></div>
+
   <script>
+    const APP_VERSION = '1.0';
+    document.getElementById('versionLabel').textContent = APP_VERSION;
+    console.log(`NaviLite - versione ${APP_VERSION} - © SM`);
+
     // Script del bottone installa app
     let deferredPrompt;
 
@@ -370,7 +388,7 @@
 
             item.addEventListener('click', () => {
               app.endPoint = [lng, lat];
-              app.navigationActive = false; // parte quando premi "Avvia navigazione"
+              app.navigationActive = false; // parte quando premi "Vai a destinazione"
               app.routeFittedOnce = false;
 
               app.map.flyTo({ center: app.endPoint, zoom: 15 });
@@ -487,6 +505,29 @@
       updateETA(null);
     }
 
+    // --- Wake Lock ---
+    let wakeLock = null;
+
+    async function attivaWakeLock() {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('Wake Lock attivato');
+        wakeLock.addEventListener('release', () => {
+          console.log('Wake Lock rilasciato');
+        });
+      } catch (err) {
+        console.error('Impossibile attivare Wake Lock:', err);
+      }
+    }
+
+    function disattivaWakeLock() {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+        console.log('Wake Lock disattivato manualmente');
+      }
+    }
+
     // --- Follow toggle unificato ---
     function toggleFollow() {
       app.followMode = !app.followMode;
@@ -509,9 +550,16 @@
       app.routeFittedOnce = false;
       app.navigationActive = true;
       requestRoute(app.startPoint, app.endPoint);
+
+      if ('wakeLock' in navigator) attivaWakeLock();
+
     });
 
-    document.getElementById('clearRouteBtn').addEventListener('click', clearRoute);
+
+    document.getElementById('clearRouteBtn').addEventListener('click', () => {
+      clearRoute();
+      disattivaWakeLock();
+    });
     document.getElementById('followBtn').addEventListener('click', toggleFollow);
 
     document.addEventListener('click', (e) => {
@@ -639,7 +687,7 @@
     function setDestinationFromLongPress(coords) {
       // Imposta destinazione
       app.endPoint = coords;
-      app.navigationActive = false; // la rotta partirà solo con "Avvia navigazione"
+      app.navigationActive = false; // la rotta partirà solo con "Vai a destinazione"
       if (app.searchMarker) app.searchMarker.remove();
       app.searchMarker = new maplibregl.Marker({ color: '#00aa00' })
         .setLngLat(app.endPoint)
