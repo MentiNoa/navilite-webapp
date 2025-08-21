@@ -4,16 +4,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Navigazione GPS</title>
-
+  <title>Navigatore GPS</title>
   <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/osmtogeojson@3.0.0-beta.5/osmtogeojson.js"></script>
-
   <link rel="manifest" href="/navilite-webapp/manifest.json">
   <meta name="theme-color" content="#0f172a">
-
   <style>
+    :root {
+      --scale-factor: 1;
+      --font-size-base: 16px;
+      transition: font-size 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-radius 0.3s ease;
+    }
+
     html,
     body {
       height: 100%;
@@ -26,38 +29,51 @@
       inset: 0;
     }
 
+    .controls,
+    input[type="text"],
+    button,
+    #resultsList,
+    #etaBox,
+    #firmaVersione {
+      font-size: var(--font-size-base);
+      transition:
+        font-size 0.3s ease,
+        padding 0.3s ease,
+        margin 0.3s ease,
+        border-radius 0.3s ease;
+    }
+
     .controls {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 2vh;
+      left: 2vw;
       z-index: 5;
       width: min(92vw, 420px);
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(6px);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-      padding: 12px;
+      border-radius: calc(var(--scale-factor) * 1.5vh);
+      box-shadow: 0 1vh 3vh rgba(0, 0, 0, 0.15);
+      padding: calc(var(--scale-factor) * 1.2vh);
     }
 
     .row {
       display: flex;
-      gap: 8px;
+      gap: calc(var(--scale-factor) * 1vh);
       align-items: center;
       flex-wrap: wrap;
     }
 
     input[type="text"] {
       flex: 1;
-      padding: 10px 12px;
-      border-radius: 10px;
+      padding: calc(var(--scale-factor) * 1vh) calc(var(--scale-factor) * 1.2vh);
+      border-radius: calc(var(--scale-factor) * 1vh);
       border: 1px solid #ddd;
-      font-size: 14px;
     }
 
     button {
-      padding: 10px 12px;
+      padding: calc(var(--scale-factor) * 1vh) calc(var(--scale-factor) * 1.2vh);
       border: none;
-      border-radius: 10px;
+      border-radius: calc(var(--scale-factor) * 1vh);
       background: #4CAF50;
       color: #fff;
       font-weight: 600;
@@ -75,7 +91,7 @@
     }
 
     button.active {
-      outline: 2px solid #084ec8;
+      outline: calc(var(--scale-factor) * 0.2vh) solid #084ec8;
       background: #0847b7;
       color: #fff;
     }
@@ -83,21 +99,21 @@
     #installBtn {
       display: none;
       width: 100%;
-      margin-top: 8px;
+      margin-top: calc(var(--scale-factor) * 1vh);
     }
 
     #resultsList {
       display: none;
-      margin-top: 8px;
-      max-height: 240px;
+      margin-top: calc(var(--scale-factor) * 1vh);
+      max-height: 30vh;
       overflow: auto;
       border: 1px solid #e3e3e3;
-      border-radius: 10px;
+      border-radius: calc(var(--scale-factor) * 1vh);
       background: #fff;
     }
 
     .result-item {
-      padding: 10px 12px;
+      padding: calc(var(--scale-factor) * 1vh) calc(var(--scale-factor) * 1.2vh);
       border-bottom: 1px solid #f2f2f2;
       cursor: pointer;
     }
@@ -112,9 +128,9 @@
 
     #etaBox {
       display: none;
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 10px;
+      margin-top: calc(var(--scale-factor) * 1vh);
+      padding: calc(var(--scale-factor) * 1vh) calc(var(--scale-factor) * 1.2vh);
+      border-radius: calc(var(--scale-factor) * 1vh);
       background: #111;
       color: #fff;
       font-weight: 600;
@@ -122,26 +138,66 @@
 
     @media (max-width: 640px) {
       .controls {
-        width: calc(100vw - 20px);
-      }
-
-      #installBtn {
-        font-size: 16px;
+        width: calc(100vw - 2vh);
       }
     }
 
     #firmaVersione {
       position: fixed;
-      left: 12px;
       bottom: 8px;
-      font-size: 12px;
-      color: #666;
+      left: 8px;
+      margin: 8px;
       background: rgba(255, 255, 255, 0.8);
-      padding: 4px 8px;
-      border-radius: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #666;
       z-index: 999;
     }
   </style>
+  <script> function aggiornaScala() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const diagonalePx = Math.sqrt(w * w + h * h);
+      const dpi = window.devicePixelRatio * 96;
+      const diagonalePollici = diagonalePx / dpi;
+
+      let scaleFactor = diagonalePx / 1000;
+      scaleFactor = Math.max(0.8, Math.min(scaleFactor, 2));
+
+      const fontSizeBase = Math.max(12, Math.min(scaleFactor * 10, 22));
+
+      document.documentElement.style.setProperty('--scale-factor', scaleFactor);
+      document.documentElement.style.setProperty('--font-size-base', `${fontSizeBase}px`);
+
+      console.log(`Diagonale: ${diagonalePx.toFixed(0)}px ~ ${diagonalePollici.toFixed(2)}\" | Scala: ${scaleFactor.toFixed(2)}`);
+    }
+
+    window.addEventListener('load', aggiornaScala);
+    window.addEventListener('resize', aggiornaScala);
+
+    // Reverse geocoding per rilevare comune
+    // Reverse geocoding per rilevare comune e salvare coordinate
+    window.addEventListener('load', () => {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(pos => {
+        const { longitude: lng, latitude: lat } = pos.coords;
+
+        // Salvo coordinate e comune attuale
+        app.currentCoords = [lng, lat];
+
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=it`)
+          .then(res => res.json())
+          .then(data => {
+            app.currentTown = data.address?.town || data.address?.city || data.address?.village || '';
+            console.log('Comune rilevato:', app.currentTown, app.currentCoords);
+          })
+          .catch(err => console.warn('Reverse geocoding fallito:', err));
+      }, err => console.warn('Geolocalizzazione fallita:', err), { enableHighAccuracy: true, timeout: 8000 });
+    });
+
+
+  </script>
 </head>
 
 <body>
@@ -161,17 +217,17 @@
       <button id="clearRouteBtn" class="warn">Annulla</button>
     </div>
 
-    <button id="installBtn">📲 Installa App</button>
+    <button id="installBtn">?? Installa App</button>
 
     <div id="etaBox">Calcolo percorso...</div>
   </div>
 
-  <div id="firmaVersione">© 2025 - v<span id="versionLabel"></span></div>
+  <div id="firmaVersione"> 2025 - v<span id="versionLabel"></span></div>
 
   <script>
-    const APP_VERSION = '1.0';
+    const APP_VERSION = '1.0.10';
     document.getElementById('versionLabel').textContent = APP_VERSION;
-    console.log(`NaviLite - versione ${APP_VERSION} - © SM`);
+    console.log(`NaviLite - versione ${APP_VERSION} - � SM`);
 
     // Script del bottone installa app
     let deferredPrompt;
@@ -191,7 +247,22 @@
         });
       }
     });
+
+    function riallineaFirma() {
+      const credits = document.querySelector('.maplibregl-ctrl-attrib');
+      const firma = document.getElementById('firmaVersione');
+
+      if (credits && firma) {
+        const rect = credits.getBoundingClientRect();
+        const offset = window.innerHeight - rect.top;
+        firma.style.bottom = `${offset}px`;
+      }
+    }
+
+    window.addEventListener('load', riallineaFirma);
+    window.addEventListener('resize', riallineaFirma);
   </script>
+
 
   <script>
     // --- App state ---
@@ -238,12 +309,18 @@
     app.map.on('style.load', applyCustomLayers);
 
     // --- Utils ---
-    function getReadableDistance(a, b) {
+    function getDistanceMeters(a, b) {
       const R = 6371000, toRad = d => d * Math.PI / 180;
       const [lng1, lat1] = a, [lng2, lat2] = b;
       const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
-      const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-      const d = 2 * R * Math.asin(Math.sqrt(s));
+      const s = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(s));
+    }
+
+    function getReadableDistance(a, b) {
+      const d = getDistanceMeters(a, b);
       return d < 1000 ? `${Math.round(d)} m` : `${(d / 1000).toFixed(1)} km`;
     }
     function updateETA(seconds) {
@@ -350,23 +427,49 @@
       resultsList.style.display = 'none';
       if (!query) return;
 
-      const params = new URLSearchParams({
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const { longitude: lng, latitude: lat } = pos.coords;
+          app.currentCoords = [lng, lat];
+          eseguiRicerca(query, lat, lng);
+        }, err => {
+          console.warn('Geolocalizzazione non riuscita:', err);
+          eseguiRicerca(query);
+        }, { enableHighAccuracy: true, timeout: 8000 });
+      } else {
+        eseguiRicerca(query);
+      }
+    }
+
+    function eseguiRicerca(query, lat, lng) {
+      const resultsList = document.getElementById('resultsList');
+
+      // Se ho le coordinate, creo una viewbox di ~10km attorno
+      let paramsObj = {
         format: 'json',
         q: query,
         addressdetails: '1',
-        limit: '8',
+        limit: '20',
         'accept-language': 'it',
-        countrycodes: 'it',
-        // Nominatim viewbox: left,top,right,bottom (Sardegna approx)
-        viewbox: '8.1,41.4,9.8,38.8',
-        bounded: '1'
-      });
+        countrycodes: 'it'
+      };
 
-      fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
-        headers: { 'Accept': 'application/json' }
-      })
+      if (lat && lng) {
+        const delta = 0.1; // circa 10km
+        paramsObj.viewbox = [
+          lng - delta, lat - delta,
+          lng + delta, lat + delta
+        ].join(',');
+        paramsObj.bounded = 1;
+      }
+
+      const params = new URLSearchParams(paramsObj);
+
+      fetch(`https://nominatim.openstreetmap.org/search?${params}`, { headers: { 'Accept': 'application/json' } })
         .then(res => res.json())
         .then(results => {
+          resultsList.innerHTML = '';
+
           if (!Array.isArray(results) || results.length === 0) {
             resultsList.style.display = 'block';
             const empty = document.createElement('div');
@@ -376,35 +479,48 @@
             return;
           }
 
-          resultsList.style.display = 'block';
-          results.forEach(place => {
-            const lng = parseFloat(place.lon);
-            const lat = parseFloat(place.lat);
-            const distText = app.startPoint ? getReadableDistance(app.startPoint, [lng, lat]) : '—';
+          const currentCoords = app.currentCoords;
+
+          let enriched = results.map(place => {
+            const plng = parseFloat(place.lon);
+            const plat = parseFloat(place.lat);
+            const distMeters = currentCoords ? getDistanceMeters(currentCoords, [plng, plat]) : null;
+            const distText = distMeters !== null ? getReadableDistance(currentCoords, [plng, plat]) : '—';
 
             const item = document.createElement('div');
             item.className = 'result-item';
             item.innerHTML = `<strong>${place.display_name}</strong><br><small>Distanza: ${distText}</small>`;
-
             item.addEventListener('click', () => {
-              app.endPoint = [lng, lat];
-              app.navigationActive = false; // parte quando premi "Vai a destinazione"
+              app.endPoint = [plng, plat];
+              app.navigationActive = false;
               app.routeFittedOnce = false;
-
               app.map.flyTo({ center: app.endPoint, zoom: 15 });
-
               if (app.searchMarker) app.searchMarker.remove();
               app.searchMarker = new maplibregl.Marker({ color: '#00aa00' })
                 .setLngLat(app.endPoint)
                 .setPopup(new maplibregl.Popup().setText('Destinazione'))
                 .addTo(app.map);
-
               resultsList.style.display = 'none';
               document.getElementById('searchInput').blur();
             });
 
-            resultsList.appendChild(item);
+            return { place, item, distMeters };
           });
+
+          // Ordina sempre per distanza
+          enriched.sort((a, b) => {
+            if (a.distMeters !== null && b.distMeters !== null) {
+              return a.distMeters - b.distMeters;
+            } else if (a.distMeters !== null) {
+              return -1;
+            } else if (b.distMeters !== null) {
+              return 1;
+            }
+            return 0;
+          });
+
+          enriched.forEach(r => resultsList.appendChild(r.item));
+          resultsList.style.display = 'block';
         })
         .catch(err => console.error('Errore ricerca:', err));
     }
@@ -555,7 +671,6 @@
 
     });
 
-
     document.getElementById('clearRouteBtn').addEventListener('click', () => {
       clearRoute();
       disattivaWakeLock();
@@ -618,7 +733,7 @@
         .catch(err => console.error('Errore nel caricamento confini Villasor:', err));
     }
 
-    //Aggiungiamo i confini quando la mappa è pronta
+    //Aggiungiamo i confini quando la mappa � pronta
     app.map.on('load', () => {
       addVillasorBorders();
 
@@ -677,7 +792,7 @@
     app.map.on('touchmove', onPressMove);
     app.map.on('touchend', onPressEnd);
 
-    // Se parte un drag, annulla il long‑press
+    // Se parte un drag, annulla il long-press
     app.map.on('dragstart', () => {
       pressMoved = true;
       clearTimeout(pressTimer);
@@ -687,7 +802,7 @@
     function setDestinationFromLongPress(coords) {
       // Imposta destinazione
       app.endPoint = coords;
-      app.navigationActive = false; // la rotta partirà solo con "Vai a destinazione"
+      app.navigationActive = false; // la rotta partir� solo con "Vai a destinazione"
       if (app.searchMarker) app.searchMarker.remove();
       app.searchMarker = new maplibregl.Marker({ color: '#00aa00' })
         .setLngLat(app.endPoint)
@@ -750,7 +865,9 @@
     }
 
   </script>
+
   <script src="/navilite-webapp/sw-register.js"></script>
+
 </body>
 
 </html>

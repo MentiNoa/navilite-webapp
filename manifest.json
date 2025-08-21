@@ -1,5 +1,5 @@
 {
-  "name": "Navigazione GPS",
+  "name": "Navigatore GPS",
   "short_name": "NaviLite",
   "description": "Mappa interattiva con ricerca, navigazione e confini.",
   "start_url": "/navilite-webapp/",
