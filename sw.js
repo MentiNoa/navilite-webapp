@@ -1,5 +1,5 @@
 // ─── CONFIGURAZIONE (deve corrispondere a CONFIG.basePath in index.html) ───
-const BASE_PATH = '/navilite-webapp-test';  // produzione: '/navilite-webapp'
+const BASE_PATH = '/navilite-webapp';  // produzione: '/navilite-webapp'
 
 const CACHE_NAME = "navilite-cache-v1";
 const MAX_ITEMS = 50;
