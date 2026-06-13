@@ -1,5 +1,5 @@
 // ─── CONFIGURAZIONE (deve corrispondere a CONFIG.basePath in index.html) ───
-const SW_BASE_PATH = '/navilite-webapp-test';  // produzione: '/navilite-webapp'
+const SW_BASE_PATH = '/navilite-webapp';  // produzione: '/navilite-webapp'
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
